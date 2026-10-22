@@ -15,7 +15,7 @@ verbatim.
 | - [x] 1.2 Anti-drift timer | Core | timer | `targetTime - Date.now()` + `requestAnimationFrame`; no `setInterval` countdown; returns cleanup | `feat(timer): implement anti-drift countdown` | `src/anti-drift-timer.ts` |
 | - [x] 1.3 Countdown display | Core | ui | `hh:mm:ss.ms` formatting as a pure function; `aria-live="off"` to avoid screen reader spam | `feat(ui): render sale countdown` | `src/format-time.ts`, countdown view |
 | - [x] 1.4 Inventory state machine | Core | inventory | Pure `transition(state, event)`; invalid transitions rejected; stock never < 0 | `feat(inventory): implement inventory state machine` | `src/inventory-machine.ts` |
-| - [ ] 1.5 Mock sale server | Core | api | Simulated latency and random rejection; returns promises; deterministic seed for tests | `feat(api): add mock flash sale server` | `src/mock-server.ts` |
+| - [x] 1.5 Mock sale server | Core | api | Simulated latency and random rejection; returns promises; deterministic seed for tests | `feat(api): add mock flash sale server` | `src/mock-server.ts` |
 | - [ ] 1.6 Optimistic lock and rollback | Core | inventory | Reserve locally first; roll back on server rejection | `feat(inventory): add optimistic lock with rollback` | reservation flow |
 | - [ ] 1.7 Lock expiry | Core | inventory | Expiry uses anti-drift timer; expired lock releases stock; timer cleaned up | `feat(inventory): expire reservation locks` | expiry logic |
 | - [ ] 1.8 Product and checkout UI | Core | ui | Semantic markup; stable product ids as keys; delegated events; prices via `Intl.NumberFormat('vi-VN')` | `feat(ui): assemble flash sale product and checkout ui` | `src/main.ts`, `src/styles.css` |
