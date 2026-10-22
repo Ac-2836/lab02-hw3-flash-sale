@@ -63,7 +63,8 @@ Copy this template for each failure (number entries 01, 02, 03, ...):
   `persisted: true` and the countdown text stayed `00:14:59.443` after
   1.5 s while it should have advanced. The original failing run was
   recorded from the test script output; its screenshots were overwritten by
-  the post-fix re-run, so the files below show the corrected behavior.
+  the post-fix re-run, so the screenshots show the corrected behavior. The
+  original failing output is kept in `evidence/1.3-summary-before-fix.txt`.
 - **Engineering Refactor / Manual Fix:** `src/main.ts` fixes the sale end
   once (`saleEnd`), stops the timer on every `pagehide`, and on `pageshow`
   with `persisted` remounts the countdown for `saleEnd - Date.now()`. The HMR
