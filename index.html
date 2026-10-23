@@ -4,14 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/src/styles.css" />
     <title>Flash Sale</title>
   </head>
   <body>
     <main>
-      <h1>Flash Sale</h1>
-      <section aria-labelledby="countdown-label">
-        <h2 id="countdown-label">Sale ends in</h2>
-        <p id="countdown" aria-live="off">00:15:00.000</p>
+      <header class="page-header">
+        <h1>Flash Sale</h1>
+        <section aria-labelledby="countdown-label" class="sale-clock">
+          <h2 id="countdown-label">Kết thúc sau</h2>
+          <p id="countdown" aria-live="off">00:15:00.000</p>
+        </section>
+      </header>
+      <div
+        id="notice"
+        class="notice"
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
+        aria-label="Thông báo"
+      ></div>
+      <section aria-labelledby="products-label">
+        <h2 id="products-label">Sản phẩm</h2>
+        <ul id="products" class="products"></ul>
       </section>
     </main>
     <script type="module" src="/src/main.ts"></script>

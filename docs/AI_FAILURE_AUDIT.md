@@ -77,3 +77,69 @@ Copy this template for each failure (number entries 01, 02, 03, ...):
   time was neither frozen nor reset. Console clean; Lighthouse accessibility
   and best practices 100. See `evidence/1.3-after-back-nav-t1.png`,
   `1.3-after-back-nav-t2.png`, `1.3-summary.txt`.
+
+## AI Failure 03: optimistic stock is derived from stale local stock
+
+- **AI Prompt:** Task 1.8 Product and checkout UI: semantic markup, stable
+  product ids as keys, delegated events, prices via
+  `Intl.NumberFormat('vi-VN')`; stock must never read below zero or jump.
+- **AI Generated Code:** `describeProduct()` in `src/product-view.ts` shows
+  the server stock for every state except RESERVING, where it shows
+  `state.stock`. The controller's local stock is never synced with rival
+  purchases, so it is `initialStock` while the server has fewer units, and
+  the optimistic number is wrong.
+- **Risk:** The shopper clicks Reserve and the "Còn lại" figure goes up
+  instead of down for the 300 to 900 ms the server takes to answer, then
+  drops: a flickering, untrustworthy stock count on a page whose job is
+  accurate stock.
+- **Detection Method / DevTools Proof:** Chrome on `vite dev` with the real
+  rivals running; a MutationObserver-style read of `.stock` around the click
+  (`hw3/task-1.8c.mjs`): `sp-002` (initial 3) showed `1`, right after the
+  click (status "Đang giữ hàng…") it showed `2`, after the server answered it
+  showed `0`. Evidence (local, git-ignored):
+  `evidence/1.8-stock-optimistic-before-fix.txt`,
+  `evidence/1.8-stock-during-reserving-before-fix.png`,
+  `evidence/1.8-defects-before-fix.png`.
+- **Engineering Refactor / Manual Fix:** In `describeProduct()` the RESERVING
+  display is now `Math.max(0, Math.min(state.stock, syncedStock - 1))`, so it is
+  clamped to the server stock minus the unit being reserved and can never be
+  above what was shown before the click. Unit tests cover a stale local stock.
+- **Verification Evidence:** Same real-rivals repro (`task-1.8c.mjs`):
+  `sp-002` showed `1` before the click, `0` while RESERVING, `0` after the
+  server answered (no rise). Main 1.8 run: before 7, while RESERVING 6, after
+  confirm 6. See `evidence/1.8-stock-optimistic-after-fix.txt` and
+  `evidence/1.8-stock-during-reserving-after-fix.png`.
+
+## AI Failure 04: rival messages overwrite the shopper's own notice
+
+- **AI Prompt:** Task 1.8 Product and checkout UI, with `aria-live` status
+  announcements for reservation, rollback, expiry and purchase.
+- **AI Generated Code:** `refresh()` and `endSale()` in `src/main.ts` assign
+  `noticeEl.textContent` for every status change of any card, including
+  changes caused by rival buyers ("... đã hết hàng."). The single polite live
+  region keeps only the latest message.
+- **Risk:** WCAG 4.1.3 status messages are lost: the shopper's "Đã mua ..."
+  confirmation, a failed-checkout warning or even "Đợt flash sale đã kết thúc."
+  can be replaced within a few hundred milliseconds by an unrelated rival
+  message, so screen reader users may never hear the result of their own
+  action, and sighted users see it flash by.
+- **Detection Method / DevTools Proof:** MutationObserver on `#notice` in the
+  real Chrome run (`hw3/task-1.8.mjs`): `Đã mua Tai nghe Bluetooth.` at
+  2282 ms was replaced at 2629 ms (347 ms later) by `Đèn bàn LED đã hết hàng.`
+  from a rival. In the bfcache run (`hw3/task-1.8b.mjs`) a lock expiry in the
+  same frame as the sale end left `Hết thời gian giữ ...` as the final
+  message and the sale-end message was gone. Evidence (local, git-ignored):
+  `evidence/1.8-notice-overwrite-before-fix.txt`,
+  `evidence/1.8-bfcache-run1.txt`, `evidence/1.8-defects-before-fix.png`.
+- **Engineering Refactor / Manual Fix:** `#notice` is now a `role="log"` with
+  `aria-live="polite"` and `aria-relevant="additions"`; `notify()` appends a
+  `<p>` per message (via `textContent`) and keeps the newest 5. New
+  `src/announcements.ts` announces only the shopper's own FSM transitions
+  (plus the sale end), so rival-caused sell-outs are no longer read out.
+  DOM-free unit tests cover the filter.
+- **Verification Evidence:** Real Chrome run: 9 notices, 0 rival-caused
+  "đã hết hàng" messages, `Đã mua ...` still in the log 2.5 s later, log capped
+  at 5. In the bfcache run the sale-end message and the lock-expiry message
+  now both survive in the log. See
+  `evidence/1.8-functional-results-after-fix.json` (noticeLog),
+  `evidence/1.8-bfcache-after-fix.txt`, `evidence/1.8-purchased-after-fix.png`.

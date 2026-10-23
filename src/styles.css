@@ -1,0 +1,189 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #111827;
+  --muted: #4b5563;
+  --border: #6b7280;
+  --primary: #1d4ed8;
+  --success: #166534;
+  --focus: #b45309;
+  --notice-bg: #e0e7ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 1rem/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+main {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.125rem;
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sale-clock h2 {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+#countdown,
+.lock {
+  font-variant-numeric: tabular-nums;
+}
+
+#countdown {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.notice {
+  min-height: 3rem;
+  margin: 1rem 0;
+  padding: 0.5rem 0.75rem;
+  border-left: 4px solid var(--primary);
+  background: var(--notice-bg);
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  height: 100%;
+  padding: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--surface);
+}
+
+.price {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.label {
+  color: var(--muted);
+}
+
+.status {
+  font-weight: 600;
+}
+
+/* State is also shown by a symbol and the label, never by colour alone. */
+.status::before {
+  margin-right: 0.35em;
+  content: '●' / '';
+}
+
+[data-status='RESERVING'] .status::before,
+[data-status='CHECKING_OUT'] .status::before {
+  content: '◌' / '';
+}
+
+[data-status='RESERVED'] .status::before {
+  content: '⏱' / '';
+}
+
+[data-status='PURCHASED'] .status::before {
+  content: '✔' / '';
+}
+
+[data-status='SOLD_OUT'] .status::before {
+  content: '✖' / '';
+}
+
+[data-status='RESERVED'],
+[data-status='CHECKING_OUT'] {
+  border-color: var(--primary);
+  border-style: double;
+  border-width: 5px;
+}
+
+[data-status='PURCHASED'] {
+  border-color: var(--success);
+}
+
+[data-status='SOLD_OUT'] {
+  border-style: dashed;
+  color: var(--muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.btn {
+  flex: 1 1 auto;
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--primary);
+  border-radius: 0.375rem;
+  background: var(--primary);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn[data-action='checkout'] {
+  border-color: var(--success);
+  background: var(--success);
+}
+
+.btn:disabled {
+  border: 2px dashed var(--border);
+  background: #e5e7eb;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.card:focus:not(:focus-visible) {
+  outline: none;
+}
