@@ -19,5 +19,5 @@ verbatim.
 | - [x] 1.6 Optimistic lock and rollback | Core | inventory | Reserve locally first; roll back on server rejection | `feat(inventory): add optimistic lock with rollback` | reservation flow |
 | - [x] 1.7 Lock expiry | Core | inventory | Expiry uses anti-drift timer; expired lock releases stock; timer cleaned up | `feat(inventory): expire reservation locks` | expiry logic |
 | - [x] 1.8 Product and checkout UI | Core | ui | Semantic markup; stable product ids as keys; delegated events; prices via `Intl.NumberFormat('vi-VN')` | `feat(ui): assemble flash sale product and checkout ui` | `src/main.ts`, `src/styles.css` |
-| - [ ] 1.9 AI failure audit | Core | docs | >= 3 entries with DevTools proof and manual fix | `docs(audit): document ai failure modes` | `docs/AI_FAILURE_AUDIT.md` (screenshots stay in local git-ignored `evidence/`) |
+| - [x] 1.9 AI failure audit | Core | docs | >= 3 entries with DevTools proof and manual fix | `docs(audit): document ai failure modes` | `docs/AI_FAILURE_AUDIT.md` (screenshots stay in local git-ignored `evidence/`) |
 | - [ ] 1.10 README | Awareness | docs | How to run, state diagram, timer design | `docs(readme): document usage and state machine` | `README.md` |

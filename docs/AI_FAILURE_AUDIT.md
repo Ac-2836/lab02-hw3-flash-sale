@@ -5,6 +5,17 @@ homework. Each entry is logged before the AI is asked to fix the subtask.
 Screenshots listed as verification evidence show the corrected UI; they are
 not presented as screenshots of the original failure.
 
+## Summary
+
+| No. | Task | Short title | Category | Detected by | Status |
+|---|---|---|---|---|---|
+| 01 | 0.1 Scaffold project | 404 console error for `/favicon.ico` on every load | Console / network | Chrome console capture plus CDP `Network.responseReceived` | Fixed, verified |
+| 02 | 1.3 Countdown display | Countdown freezes after back/forward cache restore | Lifecycle (cleanup without restart) | Real back/forward navigation in Chrome, `pageshow` `persisted: true` | Fixed, verified |
+| 03 | 1.8 Product and checkout UI | Optimistic stock derived from stale local stock | State display | Reading `.stock` before, right after and after the Reserve click with real rivals running | Fixed, verified |
+| 04 | 1.8 Product and checkout UI | Rival messages overwrite the shopper's own notice | Accessibility (live region, WCAG 4.1.3) | MutationObserver on `#notice` in real Chrome | Fixed, verified |
+
+The HW3 minimum of 3 documented AI flaws is met (4 entries).
+
 <!--
 Copy this template for each failure (number entries 01, 02, 03, ...):
 
@@ -29,7 +40,8 @@ Copy this template for each failure (number entries 01, 02, 03, ...):
   already emits a console error.
 - **Risk:** The console is no longer clean from the first commit, so real
   errors added by later tasks are harder to spot, and the Lighthouse Best
-  Practices audit "Browser errors were logged to the console" fails.
+  Practices audit "Browser errors were logged to the console" would fail
+  (not measured before the fix).
 - **Detection Method / DevTools Proof:** Loaded the built app (`vite preview`,
   port 5103) in Chrome via Playwright and captured console output:
   `[console.error] Failed to load resource: the server responded with a
@@ -80,9 +92,9 @@ Copy this template for each failure (number entries 01, 02, 03, ...):
 
 ## AI Failure 03: optimistic stock is derived from stale local stock
 
-- **AI Prompt:** Task 1.8 Product and checkout UI: semantic markup, stable
-  product ids as keys, delegated events, prices via
-  `Intl.NumberFormat('vi-VN')`; stock must never read below zero or jump.
+- **AI Prompt:** Task 1.8 Product and checkout UI (WBS row): semantic markup;
+  stable product ids as keys; delegated events; prices via
+  `Intl.NumberFormat('vi-VN')`.
 - **AI Generated Code:** `describeProduct()` in `src/product-view.ts` shows
   the server stock for every state except RESERVING, where it shows
   `state.stock`. The controller's local stock is never synced with rival
@@ -93,8 +105,9 @@ Copy this template for each failure (number entries 01, 02, 03, ...):
   drops: a flickering, untrustworthy stock count on a page whose job is
   accurate stock.
 - **Detection Method / DevTools Proof:** Chrome on `vite dev` with the real
-  rivals running; a MutationObserver-style read of `.stock` around the click
-  (`hw3/task-1.8c.mjs`): `sp-002` (initial 3) showed `1`, right after the
+  rivals running; a DOM read of `.stock` before the click, synchronously right
+  after it, and after the server answered (`hw3/task-1.8c.mjs`): `sp-002`
+  (initial 3) showed `1`, right after the
   click (status "Đang giữ hàng…") it showed `2`, after the server answered it
   showed `0`. Evidence (local, git-ignored):
   `evidence/1.8-stock-optimistic-before-fix.txt`,
@@ -112,8 +125,9 @@ Copy this template for each failure (number entries 01, 02, 03, ...):
 
 ## AI Failure 04: rival messages overwrite the shopper's own notice
 
-- **AI Prompt:** Task 1.8 Product and checkout UI, with `aria-live` status
-  announcements for reservation, rollback, expiry and purchase.
+- **AI Prompt:** Task 1.8 Product and checkout UI (same WBS row as entry 03);
+  the generated UI announces reservation, rollback, expiry and purchase in an
+  `aria-live` region.
 - **AI Generated Code:** `refresh()` and `endSale()` in `src/main.ts` assign
   `noticeEl.textContent` for every status change of any card, including
   changes caused by rival buyers ("... đã hết hàng."). The single polite live
